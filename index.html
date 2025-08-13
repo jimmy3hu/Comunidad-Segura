@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plataforma Comunidad segura</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* Estilos generales */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f4f8;
+      color: #333;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(90deg, #01314b, #00b4d8);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Navegación principal ajustada */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      background-color: #023e8a;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 0.5rem 1rem;
+      gap: 1rem;
+      position: relative;
+    }
+
+    nav > div:first-child {
+      display: flex;
+      gap: 1rem;
+    }
+
+    nav button {
+      background: none;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.6rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-radius: 6px;
+    }
+
+    nav button:hover,
+    nav button.active {
+      background-color: #0096c7;
+      transform: scale(1.05);
+    }
+
+    /* Contenedor del botón de acceso y menú desplegable */
+    #userAccessContainer {
+      position: relative;
+      z-index: 1000;
+    }
+
+    #btnUserAccess {
+      background: none;
+      border: none;
+      color: white;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      padding: 0.8rem 1.6rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    #btnUserAccess:hover {
+      background-color: #0096c7;
+      transform: scale(1.05);
+    }
+
+    #userAccessMenu {
+      position: absolute;
+      right: 0;
+      top: 45px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 0.5rem 0;
+      width: 180px;
+      display: none;
+    }
+
+    #userAccessMenu button {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 1rem;
+      color: #023e8a;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+      border-radius: 0;
+    }
+
+    #userAccessMenu button:hover {
+      background-color: #00b4d8;
+      color: white;
+    }
+
+    main {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      min-height: 400px;
+    }
+
+    h1, h2, h3 {
+      color: #023e8a;
+      margin-bottom: 0.5rem;
+    }
+
+    form {
+      margin-top: 1rem;
+    }
+
+    label {
+      display: block;
+      margin: 1rem 0 0.4rem;
+      font-weight: 600;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #0077b6;
+      outline: none;
+    }
+
+    button[type="submit"] {
+      background-color: #0077b6;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.6rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background-color 0.3s, transform 0.2s;
+      font-weight: 600;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #023e8a;
+      transform: scale(1.03);
+    }
+
+    .info-text {
+      background-color: #dff6ff;
+      border-left: 6px solid #00b4d8;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: 6px;
+      font-style: italic;
+      color: #03045e;
+      box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Formularios login y registro - ocultos por defecto */
+    #formLogin, #formRegister {
+      max-width: 480px;
+      margin: 2rem auto 0;
+      background: #1d1d7c;
+      padding: 1.5rem 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    #formLogin.active,
+    #formRegister.active {
+      display: flex;
+    }
+
+    /* Mensaje de estado */
+    #welcomeMessage {
+      max-width: 480px;
+      margin: 1.5rem auto;
+      text-align: center;
+      font-weight: 600;
+      color: #0077b6;
+      display: none;
+    }
+
+    /* Footer completo pantalla y sección inicial con fondo color */
+  footer {
+  width: 100%;
+  background: linear-gradient(90deg, #013855, #075564);
+  color: white;
+  box-sizing: border-box;
+  margin-top: 2rem;
+}
+
+.footer-initial {
+  background-color: #0077b6;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.footer-initial h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.footer-initial p {
+  margin: 0.5rem 0 0 0;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.footer-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;       /* Centrado horizontal */
+  align-items: flex-start;       /* Alineación vertical superior */
+  gap: 2rem;                     /* Espacio uniforme entre columnas */
+}
+
+.footer-info,
+.footer-social,
+.footer-links {
+  flex: 0 1 250px;               /* No se expanden más allá de 250px */
+  min-width: 200px;
+  text-align: center;           /* Centrado de contenido */
+}
+
+.footer-info h3,
+.footer-social h3,
+.footer-links h3 {
+  margin-bottom: 1rem;
+  color: #00b4d8;
+}
+
+.footer-info p {
+  margin: 0.5rem 0;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin: 0.5rem 0;
+}
+
+.footer-links a {
+  color: #00b4d8;
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.social-icons a {
+  color: white;
+  font-size: 1.5rem;
+  transition: color 0.3s;
+}
+
+.social-icons a:hover {
+  color: #00b4d8;
+}
+
+    /* Modo oscuro automático */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #121212;
+        color: #e0e0e0;
+      }
+      header {
+        background: linear-gradient(90deg, #003049, #005f73);
+        color: #ffffff;
+      }
+      nav {
+        background-color: #00203f;
+      }
+      nav button, #btnUserAccess {
+        color: #ffffff;
+      }
+      nav button:hover,
+      nav button.active,
+      #btnUserAccess:hover {
+        background-color: #005f73;
+      }
+      main {
+        background-color: #1e1e1e;
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+      }
+      h1, h2, h3 {
+        color: #90e0ef;
+      }
+      input, select, textarea {
+        background-color: #2c2c2c;
+        color: #e0e0e0;
+        border: 1px solid #555;
+      }
+      input:focus, select:focus, textarea:focus {
+        border-color: #00b4d8;
+      }
+      button[type="submit"] {
+        background-color: #0077b6;
+      }
+      button[type="submit"]:hover {
+        background-color: #0096c7;
+      }
+      .info-text {
+        background-color: #003049;
+        border-left: 6px solid #00b4d8;
+        color: #caf0f8;
+      }
+      #userAccessMenu {
+        background-color: #1e1e1e;
+        border-color: #555;
+      }
+      #userAccessMenu button {
+        color: #caf0f8;
+      }
+      #userAccessMenu button:hover {
+        background-color: #005f73;
+        color: #ffffff;
+      }
+    }
+
+    /* Móvil */
+    @media (max-width: 600px) {
+      nav {
+        flex-direction: column;
+        align-items: center;
+      }
+      #userAccessContainer {
+        position: static;
+        margin-top: 0.5rem;
+      }
+      .footer-container {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>Comunidad Segura</h1>
+    <p>Una plataforma digital para reportar emergencias y registrar información de salud.</p>
+  </header>
+
+  <nav>
+    <div>
+      <button id="btnEmergencia" class="active" aria-controls="seccionEmergencia" aria-selected="true">
+        <i class="fas fa-exclamation-triangle"></i> Reportar Emergencia
+      </button>
+      <button id="btnRegistro" aria-controls="seccionRegistro" aria-selected="false">
+        <i class="fas fa-user-plus"></i> Registro de Salud
+      </button>
+      <button id="btnInfo" aria-controls="seccionInfo" aria-selected="false">
+        <i class="fas fa-chart-line"></i> Información sobre Estadísticas
+      </button>
+    </div>
+
+    <div id="userAccessContainer">
+      <button id="btnUserAccess" aria-haspopup="true" aria-expanded="false" aria-controls="userAccessMenu">
+        <i class="fas fa-user"></i> Acceso
+      </button>
+      <div id="userAccessMenu" role="menu" aria-label="Opciones de acceso">
+        <button id="btnLogin" role="menuitem">Iniciar Sesión</button>
+        <button id="btnRegister" role="menuitem">Registrarme</button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Sección Reportar Emergencia -->
+    <section id="seccionEmergencia" tabindex="0">
+      <h2>Reportar Emergencia</h2>
+      <p>Usa este formulario para reportar emergencias médicas, desastres naturales o situaciones de peligro en tu comunidad. Proporciona todos los detalles posibles para una respuesta rápida y efectiva.</p>
+      <form id="formEmergencia">
+        <label for="tipoEmergencia">Tipo de Emergencia:</label>
+        <select id="tipoEmergencia" required>
+          <option value="" disabled selected>Seleccione una opción</option>
+          <option value="medica">Emergencia Médica</option>
+          <option value="desastre">Desastre Natural</option>
+          <option value="peligro">Situación de Peligro</option>
+        </select>
+
+        <label for="descripcion">Descripción detallada:</label>
+        <textarea id="descripcion" rows="4" placeholder="Describe lo que está ocurriendo..." required></textarea>
+
+        <label for="ubicacion">Ubicación (se puede usar GPS del dispositivo):</label>
+        <input type="text" id="ubicacion" placeholder="Ej. Calle, colonia, referencia" required />
+
+        <label for="foto">Adjuntar fotografía (opcional):</label>
+        <input type="file" id="foto" accept="image/*" />
+
+        <button type="submit">Enviar Reporte</button>
+      </form>
+    </section>
+
+    <!-- Sección Registro de Salud -->
+    <section id="seccionRegistro" tabindex="0" hidden>
+      <h2>Registro de Salud</h2>
+      <p>Lleva un registro personalizado de tu salud y la de tu familia para identificar patrones y recibir alertas importantes.</p>
+      <form id="formRegistroSalud">
+        <label for="edad">Edad:</label>
+        <input type="number" id="edad" min="0" max="120" required />
+
+        <label for="tipoSangre">Tipo de Sangre:</label>
+        <select id="tipoSangre" required>
+          <option value="" disabled selected>Seleccione su tipo de sangre</option>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
+        </select>
+
+        <label for="alergias">Alergias:</label>
+        <input type="text" id="alergias" placeholder="Ej. Ninguna, Penicilina" />
+
+        <label for="enfermedades">Enfermedades Crónicas:</label>
+        <input type="text" id="enfermedades" placeholder="Ej. Ninguna, Diabetes" />
+
+        <h3>Registros recientes de síntomas y tratamientos:</h3>
+        <label for="fechaSintoma">Fecha:</label>
+        <input type="date" id="fechaSintoma" />
+
+        <label for="temperatura">Temperatura (°C):</label>
+        <input type="number" id="temperatura" step="0.1" min="35" max="42" />
+
+        <label for="tratamiento">Tratamiento:</label>
+        <textarea id="tratamiento" rows="3" placeholder="Describe medicamentos o acciones tomadas"></textarea>
+
+        <button type="submit">Guardar Registro</button>
+      </form>
+    </section>
+
+    <!-- Sección Información sobre Estadísticas (sin gráfico) -->
+    <section id="seccionInfo" tabindex="0" hidden>
+      <h2>Información sobre Estadísticas Comunitarias</h2>
+      <div class="info-text">
+        <p>Próximamente, se podrán ver estadísticas generales sobre emergencias y salud que ayudarán a entender mejor las necesidades y tendencias de nuestra comunidad.</p>
+        <p>Esta información es fundamental para que autoridades y vecinos puedan coordinar acciones preventivas y de respuesta más efectivas.</p>
+        <p>Por ahora, nuestra plataforma está enfocada en que puedas registrar y reportar información relevante para la salud y seguridad de tu entorno.</p>
+      </div>
+    </section>
+
+    <!-- Formulario de Inicio de Sesión -->
+<form id="formLogin" aria-label="Formulario de inicio de sesión">
+  <h2>Iniciar Sesión</h2>
+  <label for="loginEmail">Correo Electrónico</label>
+  <input type="email" id="loginEmail" placeholder="correo@ejemplo.com" required />
+  
+  <label for="loginPassword">Contraseña</label>
+  <input type="password" id="loginPassword" placeholder="********" required />
+  
+  <button type="submit">Entrar</button>
+</form>
+
+<!-- Formulario de Registro -->
+<form id="formRegister" aria-label="Formulario de registro de usuario">
+  <h2>Registrarme</h2>
+  <label for="registerName">Nombre Completo</label>
+  <input type="text" id="registerName" placeholder="Tu nombre completo" required />
+  
+  <label for="registerEmail">Correo Electrónico</label>
+  <input type="email" id="registerEmail" placeholder="correo@ejemplo.com" required />
+  
+  <label for="registerPassword">Contraseña</label>
+  <input type="password" id="registerPassword" placeholder="********" required />
+  
+  <button type="submit">Crear Cuenta</button>
+</form>
+
+<!-- Mensaje de bienvenida (puedes colocarlo donde quieras mostrarlo) -->
+<div id="welcomeMessage" style="display: none;">¡Bienvenido! Has iniciado sesión correctamente.</div>
+
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-info">
+        <h3>Salud Conecta</h3>
+        <p>&copy; 2025 Comunidad Segura. Todos los derechos reservados.</p>
+        <p>Contacto: <a href="mailto:info@saludconecta.com">info@saludconecta.com</a></p>
+      </div>
+      <div class="footer-social">
+        <h3>Síguenos</h3>
+        <div class="social-icons">
+          <a href="https://www.facebook.com/share/15yNmirRUh/" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.tiktok.com/@comunidadsegura21?is_from_webapp=1&sender_device=pc" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+          <a href="https://www.instagram.com/comunidadseguraoficial/#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+      <div class="footer-links">
+        <h3>Enlaces Rápidos</h3>
+        <ul>
+          <li><a href="#seccionEmergencia">Reportar Emergencia</a></li>
+          <li><a href="#seccionRegistro">Registro de Salud</a></li>
+          <li><a href="#seccionInfo">Información sobre Estadísticas</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  // Referencias a elementos
+      const buttons = document.querySelectorAll("nav > div:first-child > button");
+      const sections = {
+        seccionEmergencia: document.getElementById('seccionEmergencia'),
+        seccionRegistro: document.getElementById('seccionRegistro'),
+        seccionInfo: document.getElementById('seccionInfo')
+      };
+      const formLogin = document.getElementById('formLogin');
+      const formRegister = document.getElementById('formRegister');
+      const welcomeMessage = document.getElementById('welcomeMessage');
+      const btnUserAccess = document.getElementById('btnUserAccess');
+      const userAccessMenu = document.getElementById('userAccessMenu');
+      const btnLogin = document.getElementById('btnLogin');
+      const btnRegister = document.getElementById('btnRegister');
+
+      // Navegación entre secciones
+      buttons.forEach(button => {
+        button.addEventListener('click', () => {
+          buttons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+          });
+          button.classList.add('active');
+          button.setAttribute('aria-selected', 'true');
+
+          Object.values(sections).forEach(section => section.hidden = true);
+          const targetId = button.getAttribute('aria-controls');
+          const targetSection = document.getElementById(targetId);
+          targetSection.hidden = false;
+          targetSection.focus();
+
+          formLogin.classList.remove('active');
+          formRegister.classList.remove('active');
+          welcomeMessage.style.display = 'none';
+        });
+      });
+
+      // Menú de acceso de usuario
+      btnUserAccess.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const expanded = btnUserAccess.getAttribute('aria-expanded') === 'true';
+        btnUserAccess.setAttribute('aria-expanded', String(!expanded));
+        userAccessMenu.style.display = expanded ? 'none' : 'block';
+      });
+
+      btnLogin.addEventListener('click', () => {
+        mostrarFormulario(formLogin);
+      });
+
+      btnRegister.addEventListener('click', () => {
+        mostrarFormulario(formRegister);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!btnUserAccess.contains(e.target) && !userAccessMenu.contains(e.target)) {
+          userAccessMenu.style.display = 'none';
+          btnUserAccess.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      function mostrarFormulario(formulario) {
+        userAccessMenu.style.display = 'none';
+        btnUserAccess.setAttribute('aria-expanded', 'false');
+        Object.values(sections).forEach(section => section.hidden = true);
+        buttons.forEach(btn => {
+          btn.classList.remove('active');
+          btn.setAttribute('aria-selected', 'false');
+        });
+        formLogin.classList.remove('active');
+        formRegister.classList.remove('active');
+        welcomeMessage.style.display = 'none';
+        formulario.classList.add('active');
+        formulario.focus();
+      }
+
+      // Validación de email
+      function esEmailValido(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      // Login
+      formLogin.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+
+        if (!email || !password) {
+          alert('Por favor, completa todos los campos.');
+          return;
+        }
+
+        if (!esEmailValido(email)) {
+          alert('Formato de correo inválido.');
+          return;
+        }
+
+        const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+        const usuario = usuarios.find(u => u.email === email && u.password === password);
+
+        if (usuario) {
+          formLogin.classList.remove('active');
+          welcomeMessage.textContent = `¡Bienvenido ${usuario.nombre}! Has iniciado sesión correctamente.`;
+          welcomeMessage.style.display = 'block';
+        } else {
+          alert('Correo o contraseña incorrectos.');
+        }
+      });
+
+      // Registro
+      formRegister.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const nombre = document.getElementById('registerName').value.trim();
+        const email = document.getElementById('registerEmail').value.trim();
+        const password = document.getElementById('registerPassword').value.trim();
+
+        if (!nombre || !email || !password) {
+          alert('Por favor, completa todos los campos.');
+          return;
+        }
+
+        if (!esEmailValido(email)) {
+          alert('Formato de correo inválido.');
+          return;
+        }
+
+        const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+        const yaExiste = usuarios.some(u => u.email === email);
+
+        if (yaExiste) {
+          alert('Ya existe una cuenta con ese correo.');
+          return;
+        }
+
+        usuarios.push({ nombre, email, password });
+        localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+        formRegister.classList.remove('active');
+        welcomeMessage.textContent = '¡Cuenta creada exitosamente! Ya puedes iniciar sesión.';
+        welcomeMessage.style.display = 'block';
+      });
+
+      // Formularios adicionales
+      document.getElementById('formEmergencia').addEventListener('submit', e => {
+        e.preventDefault();
+        alert('Reporte enviado. Gracias por su colaboración.');
+        e.target.reset();
+      });
+
+      document.getElementById('formRegistroSalud').addEventListener('submit', e => {
+        e.preventDefault();
+        alert('Registro de salud guardado.');
+        e.target.reset();
+      });
+</script>
+
+</body>
+</html>
